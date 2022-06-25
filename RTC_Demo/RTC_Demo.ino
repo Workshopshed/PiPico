@@ -1,8 +1,6 @@
 #include "rtc_api.h"
 #include <TimeLib.h> //https://github.com/PaulStoffregen/Time
 
-char datetime_buf[256];
-char *datetime_str = &datetime_buf[0];
 tmElements_t tm;
 time_t t;
 
