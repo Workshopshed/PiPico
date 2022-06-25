@@ -6,6 +6,8 @@ extern "C"
 {
   typedef void(* rtc_callback_t )(void);
   void rtc_set_alarm      (datetime_t *t, rtc_callback_t user_callback);
+  void rtc_disable_alarm (void);
+  void rtc_enable_alarm (void);
 }
 
 char datetime_buf[256];
@@ -55,6 +57,7 @@ datetime_t t_alarm = {
   while(!awake) {}
 
   Serial.print("Woken Up");
+  rtc_disable_alarm ();
 }
 
 static void sleep_callback(void) {
