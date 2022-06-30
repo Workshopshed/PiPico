@@ -14,3 +14,6 @@ Note that not all frequencies are available for set_sys_clock_khz. There is a sc
 
 ## LowPower
 The low power example is based on https://github.com/raspberrypi/pico-extras and https://ghubcoder.github.io/posts/awaking-the-pico/ 
+
+## Hardware Reset
+This demonstrates how the Pico can do a hardware reset of itself via the Run pin. Attach a wire from GPIO 8 to RUN. The sketch implements a blink where the pico resets every 2 seconds.
