@@ -41,6 +41,16 @@ void set_sys_clock_pll(uint32_t vco_freq, uint post_div1, uint post_div2) {
                     CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLKSRC_PLL_USB,
                     48 * MHZ,
                     48 * MHZ);
+
+  //  CLK RTC = ideally XOSC (12MHz) / 256 = 46875Hz but could be rosc
+      uint clk_rtc_src = CLOCKS_CLK_RTC_CTRL_AUXSRC_VALUE_XOSC_CLKSRC;
+      uint src_hz = XOSC_MHZ * MHZ;
+
+    clock_configure(clk_rtc,
+                    0, // No GLMUX
+                    clk_rtc_src,
+                    src_hz,
+                    46875);  
 }
 
 bool check_sys_clock_khz(uint32_t freq_khz, uint *vco_out, uint *postdiv1_out, uint *postdiv_out) {

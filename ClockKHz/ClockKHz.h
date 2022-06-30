@@ -1,6 +1,14 @@
 #include "hardware/pll.h"
 #include "hardware/clocks.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+    void stdio_init_all(void);
+#ifdef __cplusplus
+}
+#endif
+
 void set_sys_clock_pll(uint32_t vco_freq, uint post_div1, uint post_div2) {
     clock_configure(clk_sys,
                     CLOCKS_CLK_SYS_CTRL_SRC_VALUE_CLKSRC_CLK_SYS_AUX,
@@ -30,6 +38,16 @@ void set_sys_clock_pll(uint32_t vco_freq, uint post_div1, uint post_div2) {
                     CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLKSRC_PLL_USB,
                     48 * MHZ,
                     48 * MHZ);
+
+  //  CLK RTC = ideally XOSC (12MHz) / 256 = 46875Hz but could be rosc
+      uint clk_rtc_src = CLOCKS_CLK_RTC_CTRL_AUXSRC_VALUE_XOSC_CLKSRC;
+      uint src_hz = XOSC_MHZ * MHZ;
+
+    clock_configure(clk_rtc,
+                    0, // No GLMUX
+                    clk_rtc_src,
+                    src_hz,
+                    46875);  
 }
 
 bool check_sys_clock_khz(uint32_t freq_khz, uint *vco_out, uint *postdiv1_out, uint *postdiv_out) {
@@ -69,7 +87,11 @@ bool check_sys_clock_khz(uint32_t freq_khz, uint *vco_out, uint *postdiv1_out, u
   if (check_sys_clock_khz(freq_khz, &vco, &postdiv1, &postdiv2)) {
     set_sys_clock_pll(vco, postdiv1, postdiv2);
     //Recalibrate Delay()
-    SysTick->LOAD = freq_khz - 1;    
+    SysTick->LOAD = freq_khz - 1; 
+
+    //Reinitialise the serial ports
+    stdio_init_all();
+
     return true;
   } else if (required) {
     panic("System clock of %u kHz cannot be exactly achieved", freq_khz);
